@@ -23,6 +23,9 @@ cc_library(
         "@bazel_tools//src/conditions:windows": [
             "config-windows/config.h",
         ],
+        "@bazel_tools//src/conditions:freebsd": [
+            "config-freebsd/config.h",
+        ],
         "//conditions:default": [
             "config-linux/config.h",
         ],
@@ -33,6 +36,9 @@ cc_library(
         ],
         "@bazel_tools//src/conditions:windows": [
             "config-windows",
+        ],
+        "@bazel_tools//src/conditions:freebsd": [
+            "config-freebsd",
         ],
         "//conditions:default": [
             "config-linux",
@@ -46,6 +52,12 @@ cc_library(
     hdrs = glob(["config-windows/shim-libc/**/*"]),
     includes = ["config-windows/shim-libc"],
     deps = [":config_h"],
+)
+
+cc_library(
+    name = "maybe_alloca_h",
+    hdrs = ["maybe-alloca/alloca.h"],
+    includes = ["maybe-alloca"],
 )
 
 _GNULIB_HDRS = glob([
@@ -215,6 +227,7 @@ cc_library(
     visibility = ["//:__pkg__"],
     deps = [":config_h"] + select({
         "@bazel_tools//src/conditions:windows": [":gnulib_windows_shims"],
+        "@bazel_tools//src/conditions:freebsd": [":maybe_alloca_h"],
         "//conditions:default": [],
     }),
 )
